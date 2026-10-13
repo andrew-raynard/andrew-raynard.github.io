@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Andrew Liharja</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f8f5;
+      --surface: #ffffff;
+      --text: #1a1a18;
+      --muted: #7a7972;
+      --border: #e5e3dd;
+      --tag-bg: #efefeb;
+      --tag-text: #4a4a46;
+    }
+
+    /* PROGRESS BAR */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: var(--text);
+      z-index: 1000;
+      transition: width 0.1s ease;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--text);
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .cursor-outline {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--text);
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      z-index: 998;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .cursor-dot, .cursor-outline { display: none; }
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1.5rem, 6vw, 6rem);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem; letter-spacing: -0.01em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    main { max-width: 900px; margin: 0 auto; padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 6vw, 2rem); }
+
+    /* ── HERO ── */
+    .hero { margin-bottom: 6rem; padding-top: 2rem; }
+    .hero-label {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      line-height: 1; letter-spacing: -0.03em;
+      color: var(--text); margin-bottom: 1rem;
+    }
+
+    .hero-interest-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* Typewriter */
+    .typewriter-wrap {
+      display: flex;
+      align-items: center;
+      min-height: 4.5rem;
+      min-width: 420px; /* Reserved space for 'Quantitative Finance' */
+    }
+    @media (max-width: 600px) {
+      .typewriter-wrap { min-width: auto; }
+    }
+    #typewriter {
+      color: var(--text);
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .cursor {
+      display: inline-block; width: 3px; height: 1em;
+      background: var(--muted); margin-left: 4px; vertical-align: middle;
+      animation: blink 0.9s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .hero-bio {
+      max-width: 560px; color: var(--muted);
+      font-size: 14px; line-height: 1.8; margin-bottom: 2rem;
+    }
+    .hero-bio strong { color: var(--text); font-weight: 500; }
+
+    .hero-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .hero-links a {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px;
+      border: 1px solid var(--border); border-radius: 2px;
+      color: var(--muted); text-decoration: none;
+      font-size: 12px; letter-spacing: 0.04em;
+      transition: all 0.18s; background: var(--surface);
+    }
+    .hero-links a:hover { border-color: var(--text); color: var(--text); background: var(--bg); }
+    .hero-links a.primary {
+      background: var(--text); color: var(--bg); border-color: var(--text);
+    }
+    .hero-links a.primary:hover { background: #333; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex; align-items: baseline; gap: 1rem;
+      margin-bottom: 2rem; padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; letter-spacing: -0.01em; }
+    .section-count { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+
+    /* ── FILTERS ── */
+    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .filter-btn {
+      padding: 5px 14px; border: 1px solid var(--border); border-radius: 2px;
+      background: transparent; color: var(--muted);
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--text); border-color: var(--text); color: var(--bg);
+    }
+
+    /* ── PROJECT GRID ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+    }
+    .project-card {
+      background: var(--surface); padding: 2rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      cursor: pointer;
+      position: relative;
+      border: 1px solid transparent;
+    }
+    .project-card:hover {
+      background: var(--surface);
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.06);
+      border-color: var(--border);
+    }
+    .project-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .project-icon { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .project-arrow { color: var(--muted); font-size: 18px; line-height: 1; transition: all 0.3s ease; }
+    .project-card:hover .project-arrow { color: var(--text); transform: translate(3px,-3px); }
+    .project-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      transition: color 0.3s ease;
+    }
+    .project-card:hover .project-title { color: #000; }
+    .project-desc { font-size: 13px; color: var(--muted); line-height: 1.65; flex: 1; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+    .tag { padding: 3px 10px; background: var(--tag-bg); color: var(--tag-text); font-size: 11px; border-radius: 2px; letter-spacing: 0.03em; }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 2px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-wip {
+      background: #fff4e5;
+      color: #663c00;
+      border: 1px solid #ffe1ba;
+    }
+    .badge-pdf {
+      background: #f0f4ff;
+      color: #1a3a8a;
+      border: 1px solid #dbeafe;
+    }
+    .badge-game {
+      background: #fdf2f8;
+      color: #9d174d;
+      border: 1px solid #fbcfe8;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(26,26,24,0.55); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); max-width: 540px; width: 100%;
+      border: 1px solid var(--border); padding: 2rem;
+      position: relative; animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none; font-size: 1.2rem; cursor: pointer;
+      color: var(--muted); line-height: 1; transition: color 0.15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-tag { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 1.6rem; letter-spacing: -0.01em; margin-bottom: 1rem; }
+    .modal-desc { color: var(--muted); font-size: 13px; line-height: 1.8; margin-bottom: 1.25rem; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: 0.75rem; }
+    .modal-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; font-family: 'DM Mono', monospace;
+      font-size: 12px; letter-spacing: 0.04em;
+      border: 1px solid var(--border); border-radius: 2px;
+      text-decoration: none; color: var(--muted);
+      background: var(--bg); cursor: pointer; transition: all 0.15s;
+    }
+    .modal-btn:hover { border-color: var(--text); color: var(--text); }
+    .modal-btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .modal-btn.primary:hover { background: #333; }
+
+    /* ── ABOUT ── */
+    .about-section { margin-top: 5rem; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; }
+    .about-text { color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .about-text p + p { margin-top: 1rem; }
+    .about-text strong { color: var(--text); font-weight: 500; }
+    .stack-list { list-style: none; }
+    .stack-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .stack-item:last-child { border-bottom: none; }
+    .stack-name { color: var(--text); }
+    .stack-type { color: var(--muted); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    /* ── CONTACT ── */
+    .contact-section {
+      margin-top: 5rem; padding: 2.5rem;
+      background: var(--text); color: var(--bg);
+    }
+    .contact-section .section-title { color: var(--bg); }
+    .contact-section .section-count { color: #777; }
+    .contact-section .section-header { border-bottom-color: #333; }
+    .contact-grid { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+    .contact-text { color: #aaa; font-size: 14px; line-height: 1.75; }
+    .contact-links { display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end; }
+    .contact-link {
+      color: var(--bg); text-decoration: none;
+      border-bottom: 1px solid #444; padding-bottom: 2px;
+      transition: border-color 0.2s; font-size: 13px; letter-spacing: 0.02em;
+    }
+    .contact-link:hover { border-color: var(--bg); }
+    .contact-link.big { font-family: 'DM Serif Display', serif; font-size: clamp(1rem, 3vw, 1.4rem); }
+
+    /* ── FOOTER ── */
+    footer {
+      max-width: 900px; margin: 3rem auto 0;
+      padding: 1.5rem clamp(1.5rem, 6vw, 2rem);
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; color: var(--muted); letter-spacing: 0.04em;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-links { align-items: flex-start; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroll-progress" id="progress-bar"></div>
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">Andrew Liharja</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <p class="hero-label">Portfolio — 2026</p>
+      <h1>Andrew Raynard Liharja</h1>
+
+      <div class="hero-interest-area">
+        <p class="hero-interest-label">Interested in</p>
+        <div class="typewriter-wrap">
+          <span id="typewriter"></span><span class="cursor"></span>
+        </div>
+      </div>
+
+      <p class="hero-bio" style="margin-top: 2.5rem;">
+        Data Science and Applied AI undergraduate at NUS. I build mathematical models, AI applications, and data-driven solutions at the intersection of mathematics, machine learning, and quantitative finance.
+      </p>
+      <div class="hero-links">
+        <a href="#projects" class="primary">View Projects ↓</a>
+        <a href="https://github.com/andrew-raynard" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.09 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.82.57C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/andrew-raynard-liharja-3a8519341" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+          LinkedIn
+        </a>
+        <a href="resume.pdf" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15V3m0 12-4-4m4 4 4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
+          Resume
+        </a>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="reveal">
+      <div class="section-header">
+        <h2 class="section-title">Projects</h2>
+        <span class="section-count" id="proj-count">— 3 projects</span>
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="quant">Quant</button>
+        <button class="filter-btn" data-filter="ai-ml">AI/ML</button>
+        <button class="filter-btn" data-filter="other">Other</button>
+      </div>
+
+      <!-- ────────────────────────────────────────────
+           HOW TO ADD A PROJECT:
+           1. Copy one <div class="project-card"> block below
+           2. Change data-tags to: quant | ml | tools
+           3. Fill in your title, description, tags, and GitHub link
+           4. The card is clickable — it opens a popup with more detail
+      ──────────────────────────────────────────── -->
+      <div class="projects-grid" id="projects-grid">
+
+        <div class="project-card" data-tags="all"
+          data-title="IMMC 2025 Global Sports League"
+          data-category="Report"
+          data-desc="Completed as part of the International Mathematical Modelling Challenge (IMMC) 2025, this project developed a mathematical model for designing a fair, competitive, and sustainable Global Sports League through optimization and quantitative analysis. Working in a four-member team, we were awarded a Distinction for our solution, culminating in a 46-page research report that presented the model, validation, and recommendations for a real-world scheduling problem."
+          data-tags-list="Mathematical Modelling,Optimization,Data Analysis,Problem Solving,Research Writing"
+          data-github=""
+          data-demo="IMMC-2025-Global-Sports-League.pdf">
+          <div class="project-card-top">
+            <span class="project-icon">Report</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <h3 class="project-title">IMMC 2025 Global Sports League <span class="badge badge-pdf">PDF</span></h3>
+          <p class="project-desc">Optimizing league scheduling and resource allocation through advanced mathematical modeling and data analysis.</p>
+          <div class="project-tags">
+            <span class="tag">Modeling</span><span class="tag">Analysis</span><span class="tag">Optimization</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-tags="quant ai-ml"
+          data-title="Stock Price Prediction with Linear Regression"
+          data-category="Quant & AI/ML"
+          data-desc="An end-to-end ML pipeline to forecast equity price movements. Features include automated data ingestion via yfinance, technical indicator engineering (RSIs, MAs), and a scikit-learn based regression model validated on out-of-sample data."
+          data-tags-list="Python,yfinance,pandas,scikit-learn,Matplotlib"
+          data-github="https://github.com/andrew-raynard"
+          data-demo="">
+          <div class="project-card-top">
+            <span class="project-icon">Quant & AI/ML</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <h3 class="project-title">Stock Price Prediction <span class="badge badge-wip">WIP</span></h3>
+          <p class="project-desc">Forecasting next-day stock movements through technical feature engineering and linear regression modeling.</p>
+          <div class="project-tags">
+            <span class="tag">ML</span><span class="tag">Quant</span><span class="tag">Finance</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-tags="other"
+          data-title="Purrfect Pile"
+          data-category="Other"
+          data-desc="An original, mobile-first cats merge game built with vanilla JavaScript and HTML5 canvas. Players drop and combine matching cat characters to create larger floofs, activate 'Zoomies' combos, and compete for high scores with persistent storage and offline PWA support."
+          data-tags-list="JavaScript,HTML5 Canvas,PWA,Mobile-First"
+          data-github="https://github.com/andrew-raynard/purrfect-pile"
+          data-demo="https://andrew-raynard.github.io/purrfect-pile/">
+          <div class="project-card-top">
+            <span class="project-icon">Other</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <h3 class="project-title">Purrfect Pile <span class="badge badge-game">Game</span></h3>
+          <p class="project-desc">A mobile-first, original Floof-merging game featuring custom canvas rendering, sound effects, and persistent high scores.</p>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span><span class="tag">Canvas</span><span class="tag">PWA</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="about-section reveal">
+      <div class="section-header">
+        <h2 class="section-title">About</h2>
+        <span class="section-count">— background &amp; stack</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>Hi, I'm Andrew, an undergraduate at the National University of Singapore studying Data Science and Applied AI. I'm passionate about applying mathematics, statistics, and computer science to solve complex real-world problems through data-driven and quantitative approaches.</p>
+          <p>My interests span artificial intelligence, data science, and quantitative finance. I enjoy building mathematical models, machine learning applications, and analytical tools that combine rigorous theory with practical impact. I'm always looking for opportunities to learn, collaborate with talented teams, and tackle challenging technical problems.</p>
+        </div>
+        <div>
+          <ul class="stack-list">
+            <li class="stack-item"><span class="stack-name">Python</span><span class="stack-type">Primary</span></li>
+            <li class="stack-item"><span class="stack-name">pandas / numpy</span><span class="stack-type">Data</span></li>
+            <li class="stack-item"><span class="stack-name">statsmodels</span><span class="stack-type">Stats</span></li>
+            <li class="stack-item"><span class="stack-name">PyTorch</span><span class="stack-type">ML</span></li>
+            <li class="stack-item"><span class="stack-name">SQL</span><span class="stack-type">Storage</span></li>
+            <li class="stack-item"><span class="stack-name">Git / GitHub</span><span class="stack-type">Versioning</span></li>
+            <li class="stack-item"><span class="stack-name">R</span><span class="stack-type">Stats</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact-section reveal">
+      <div class="section-header">
+        <h2 class="section-title">Contact</h2>
+        <span class="section-count">— get in touch</span>
+      </div>
+      <div class="contact-grid">
+        <p class="contact-text">Open to collaboration or just chatting about tech and finance. Reach out anytime, I'm always happy to connect :)</p>
+        <div class="contact-links">
+          <a class="contact-link big" href="mailto:andrew.liharja@gmail.com">andrew.liharja@gmail.com</a>
+          <a class="contact-link" href="https://www.linkedin.com/in/andrew-raynard-liharja-3a8519341" target="_blank">LinkedIn ↗</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 Andrew Liharja</span>
+    <span>andrewliharja.github.io</span>
+  </footer>
+
+  <!-- PROJECT MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <p class="modal-tag" id="modal-category"></p>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <p class="modal-desc" id="modal-desc"></p>
+      <div class="modal-tags" id="modal-tags"></div>
+      <div class="modal-actions">
+        <a class="modal-btn primary" id="modal-github" href="#" target="_blank">↗ View on GitHub</a>
+        <a class="modal-btn" id="modal-demo" href="#" target="_blank" style="display:none">▶ View Full Report</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SCROLL PROGRESS
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar').style.width = scrolled + '%';
+    });
+
+    // CUSTOM CURSOR
+    const dot = document.getElementById('cursor-dot');
+    const outline = document.getElementById('cursor-outline');
+    window.addEventListener('mousemove', (e) => {
+      const { clientX: x, clientY: y } = e;
+      dot.style.transform = `translate(${x}px, ${y}px)`;
+
+      outline.animate({
+        transform: `translate(${x - 20}px, ${y - 20}px)`
+      }, { duration: 500, fill: "forwards", easing: "ease-out" });
+    });
+
+    // MAGNETIC BUTTONS (Subtle)
+    const interactiveLinks = document.querySelectorAll('.hero-links a, .nav-logo, .nav-links a');
+    interactiveLinks.forEach(link => {
+      link.addEventListener('mousemove', (e) => {
+        const rect = link.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        link.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.transform = `translate(0, 0)`;
+      });
+    });
+
+    // REVEAL ANIMATION ON SCROLL
+    function reveal() {
+      var reveals = document.querySelectorAll(".reveal");
+      for (var i = 0; i < reveals.length; i++) {
+        var windowHeight = window.innerHeight;
+        var elementTop = reveals[i].getBoundingClientRect().top;
+        var elementVisible = 100;
+        if (elementTop < windowHeight - elementVisible) {
+          reveals[i].classList.add("active");
+        }
+      }
+    }
+    window.addEventListener("scroll", reveal);
+    reveal();
+
+    /* ── TYPEWRITER ── */
+    const words = ['Artificial Intelligence', 'Data Science', 'Quantitative Finance'];
+    let wi = 0, ci = 0, deleting = false;
+    const el = document.getElementById('typewriter');
+    function type() {
+      const word = words[wi];
+      el.textContent = deleting ? word.slice(0, ci--) : word.slice(0, ci++);
+      let delay = deleting ? 60 : 90;
+      if (!deleting && ci === word.length + 1) { deleting = true; delay = 1400; }
+      if (deleting && ci < 0) { deleting = false; wi = (wi + 1) % words.length; ci = 0; delay = 300; }
+      setTimeout(type, delay);
+    }
+    type();
+
+    /* ── FILTER BUTTONS ── */
+    const btns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.project-card');
+    const countEl = document.getElementById('proj-count');
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        let visible = 0;
+        cards.forEach(card => {
+          const match = f === 'all' || card.dataset.tags.split(' ').includes(f);
+          card.classList.toggle('hidden', !match);
+          if (match) visible++;
+        });
+        countEl.textContent = `— ${visible} project${visible !== 1 ? 's' : ''}`;
+      });
+    });
+
+    /* ── PROJECT MODAL ── */
+    const overlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        let category = card.dataset.category;
+        if (category === 'ML') category = 'AI/ML';
+        document.getElementById('modal-category').textContent = category;
+        document.getElementById('modal-title').textContent = card.dataset.title;
+        document.getElementById('modal-desc').textContent = card.dataset.desc;
+
+        const tagsEl = document.getElementById('modal-tags');
+        tagsEl.innerHTML = '';
+        card.dataset.tagsList.split(',').forEach(t => {
+          const s = document.createElement('span');
+          s.className = 'tag'; s.textContent = t.trim();
+          tagsEl.appendChild(s);
+        });
+
+        const gh = document.getElementById('modal-github');
+        if (card.dataset.github) {
+          gh.href = card.dataset.github;
+          gh.style.display = 'inline-flex';
+        } else {
+          gh.style.display = 'none';
+        }
+
+        const demo = document.getElementById('modal-demo');
+        if (card.dataset.demo) {
+          demo.href = card.dataset.demo;
+          demo.style.display = 'inline-flex';
+          // Update button text for PDF projects
+          if (card.dataset.demo.endsWith('.pdf')) {
+            demo.textContent = '▶ View Full Report';
+          } else {
+            demo.textContent = '▶ Live Demo';
+          }
+        } else {
+          demo.style.display = 'none';
+        }
+
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+
+</body>
+</html>
