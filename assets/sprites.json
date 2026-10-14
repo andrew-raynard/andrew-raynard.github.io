@@ -1,0 +1,76 @@
+{
+  "idle": {
+    "url": "assets/idle.png",
+    "frameWidth": 200,
+    "frameHeight": 307,
+    "frames": 3,
+    "duration": 450
+  },
+  "walking": {
+    "url": "assets/walking.png",
+    "frameWidth": 154,
+    "frameHeight": 299,
+    "frames": 3,
+    "duration": 120
+  },
+  "sleeping": {
+    "url": "assets/sleeping.png",
+    "frameWidth": 227,
+    "frameHeight": 278,
+    "frames": 3,
+    "duration": 250
+  },
+  "hovering": {
+    "url": "assets/hovering.png",
+    "frameWidth": 145,
+    "frameHeight": 304,
+    "frames": 3,
+    "duration": 150
+  },
+  "clicked": {
+    "url": "assets/clicked.png",
+    "frameWidth": 195,
+    "frameHeight": 322,
+    "frames": 3,
+    "duration": 100
+  },
+  "project_opened": {
+    "url": "assets/project_opened.png",
+    "frameWidth": 322,
+    "frameHeight": 308,
+    "frames": 2,
+    "duration": 120
+  },
+  "thinking": {
+    "url": "assets/thinking.png",
+    "frameWidth": 173,
+    "frameHeight": 305,
+    "frames": 3,
+    "duration": 200
+  },
+  "cheer": {
+    "url": "assets/cheer.png",
+    "frameWidth": 210,
+    "frameHeight": 313,
+    "frames": 3,
+    "duration": 120
+  },
+  "look_around": {
+    "url": "assets/look_around.png",
+    "frameWidth": 234,
+    "frameHeight": 304,
+    "frames": 3,
+    "duration": 180
+  },
+  "talking": {
+    "url": "assets/idle.png",
+    "frameWidth": 200,
+    "frameHeight": 307,
+    "frames": 3,
+    "sequence": [
+      1,
+      2
+    ],
+    "duration": 150
+  }
+}
