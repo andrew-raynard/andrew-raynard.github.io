@@ -73,6 +73,9 @@ const oneShots=new Set(['clicked','projectOpened','cheer','lookAround','landed']
 function currentSequence(){
  const n=entry(state).frames;
  if(state==='idle')return [1]; // Stable full-body pose; skip broken pointing frames
+  // Avoid damaged overlapping frames in the source sprite sheets.
+  if(state==='lookAround')return [0,2];
+  if(state==='projectOpened')return [0];
  if(state==='sleeping'&&n>2)return Array.from({length:n-2},(_,i)=>i+2);
  return Array.from({length:n},(_,i)=>i);
 }
