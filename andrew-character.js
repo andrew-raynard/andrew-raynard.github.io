@@ -34,7 +34,7 @@ function draw(ctx,state,index){
  const {frameWidth:w,frameHeight:h}=item;
  ctx.clearRect(0,0,PIXELS,PIXELS);
  // Normalize older large source frames into the same 64px viewport.
- const factor=Math.min(60/w,58/322);
+ const factor=Math.min(56/w,58/h);
  const dw=Math.round(w*factor),dh=Math.round(h*factor);
  const dx=Math.round((SIZE-dw)/2),dy=SIZE-2-dh;
  ctx.drawImage(item.img,frame*w,0,w,h,dx*SCALE,dy*SCALE,dw*SCALE,dh*SCALE);
@@ -71,20 +71,15 @@ function setState(next,opts={}){
 }
 const oneShots=new Set(['clicked','projectOpened','cheer','lookAround','landed']);
 function currentSequence(){
- const info=entry(state);
- // The source artwork contains several partially cut-off poses.
- // Use only verified, complete frames as configured in sprites.json.
- const seq=Array.isArray(info.sequence)&&info.sequence.length
-   ? info.sequence.filter(i=>Number.isInteger(i)&&i>=0&&i<info.frames)
-   : Array.from({length:info.frames},(_,i)=>i);
- if(!seq.length)return [0];
- if(state==='idle'||state==='walking')return [seq[0]];
- return seq;
+ const n=entry(state).frames;
+ if(state==='idle'&&n>=3)return [0,1,2,1,0];
+ if(state==='sleeping'&&n>2)return Array.from({length:n-2},(_,i)=>i+2);
+ return Array.from({length:n},(_,i)=>i);
 }
 function tickFrames(dt,now){
  if(reduced.matches){frame=0;return;}
  const info=entry(state);const seq=currentSequence();
- const duration=info.duration||320;
+ const duration=info.duration||180;
  elapsed+=dt;
  while(elapsed>=duration){
   elapsed-=duration;
@@ -128,14 +123,16 @@ function tickMotion(dt,now){
  }
  if(state==='idle'&&!panel.hidden)return;
  if(state==='idle'&&now-lastInput>=sleepDelay){setState('sleeping');return;}
- if(false && state==='idle'&&now>=nextLook){nextLook=now+8000+Math.random()*7000;setState('lookAround');return;}
- if(false && state==='idle'&&now>=nextWave){nextWave=now+10000;setState('hovering');freezeUntil=now+600;return;}
+ if(state==='idle'&&now>=nextLook){nextLook=now+8000+Math.random()*7000;setState('lookAround');return;}
+ if(state==='idle'&&now>=nextWave){nextWave=now+10000;setState('hovering');freezeUntil=now+600;return;}
  if(state==='idle'&&now>=walkUntil){walkUntil=now+6000+Math.random()*6000;walkTo(10+Math.random()*(innerWidth-PIXELS-20));}
  if(state==='hovering'&&!hovering&&freezeUntil&&now>freezeUntil)setState('idle',{force:true});
 }
 function paint(){
- const visual=reduced.matches?'idle':state;
- const idx=reduced.matches?0:activeFrame();
+ // Suppress the pointing/hover gesture only; preserve walking and other animations.
+ const noPointing=(state==='hovering'||state==='projectOpened');
+ const visual=(reduced.matches||noPointing)?'idle':state;
+ const idx=(reduced.matches||noPointing)?0:activeFrame();
  draw(mainCtx,visual,idx);
  const panelState=panel.hidden?'idle':(busy?state:'listening');
  draw(chatCtx,panelState,panelState===state?idx:0);
@@ -178,8 +175,8 @@ function release(e){
 }
 trigger.addEventListener('pointerup',release);
 trigger.addEventListener('pointercancel',e=>{if(e.pointerId===pointerId){pointerId=null;startPointer=null;dragMoved=false;dragging=false;velocityY=0;setState('falling',{force:true});}});
-trigger.addEventListener('pointerenter',()=>{hovering=true;});
-trigger.addEventListener('pointerleave',()=>{hovering=false;});
+trigger.addEventListener('pointerenter',()=>{hovering=true;if(ambient.has(state)&&state!=='sleeping')setState('hovering',{force:true});});
+trigger.addEventListener('pointerleave',()=>{hovering=false;if(state==='hovering')setState('idle',{force:true});});
 // Keyboard accessibility: native button Enter/Space fires click without pointerup.
 trigger.addEventListener('click',e=>{if(e.detail!==0)return;if(panel.hidden){setState('clicked',{force:true});if(reduced.matches){openPanel(true);setState('listening',{force:true});}}else openPanel(false);});
 function openPanel(open){panel.hidden=!open;trigger.setAttribute('aria-expanded',String(open));if(open){input.focus();if(state!=='thinking'&&state!=='talking')setState('listening',{force:true});}else {trigger.focus();if(!busy)setState('idle',{force:true});}}
