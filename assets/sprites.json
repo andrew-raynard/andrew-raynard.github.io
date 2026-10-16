@@ -3,7 +3,7 @@
     "url": "assets/idle.png",
     "frameWidth": 200,
     "frameHeight": 307,
-    "frames": 3,
+    "frames": 2,
     "sequence": [
       0,
       1
