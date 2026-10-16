@@ -622,6 +622,13 @@ footer { max-width:1160px; border-color:#273044; margin-top:0; padding:1.7rem cl
 .ask-head{display:flex;gap:10px;align-items:center}.panel-pixel{flex:none;transform:scale(.9);transform-origin:bottom left}
 @media(max-width:600px){.andrew-stage{bottom:4px}.ask-panel{bottom:115px!important}}
 @media(prefers-reduced-motion:reduce){.andrew-pixel{transition:none!important;animation:none!important}}
+
+/* GymFix project card: actual prototype screenshot */
+.project-card.gymfix-card::before { display:none; content:none; }
+.gymfix-card .gymfix-visual { height:175px; margin:0 -1.65rem .6rem; border:0; border-bottom:1px solid #354059; border-radius:0; background:#111827; }
+.gymfix-card .gymfix-visual img { display:block; width:100%; height:100%; object-fit:cover; object-position:center top; transition:transform .45s ease; }
+.gymfix-card:hover .gymfix-visual img,.gymfix-card:focus-visible .gymfix-visual img { transform:scale(1.035); }
+@media(max-width:600px){.gymfix-card .gymfix-visual{margin-left:-1.2rem;margin-right:-1.2rem;height:155px}}
 </style>
 </head>
 <body>
@@ -682,7 +689,7 @@ footer { max-width:1160px; border-color:#273044; margin-top:0; padding:1.7rem cl
       <p class="eyebrow">01 / SELECTED WORK</p>
       <div class="section-header">
         <h2 class="section-title">Things I've <span class="gradient-text">built.</span></h2>
-        <span class="section-count" id="proj-count">— 3 projects</span>
+        <span class="section-count" id="proj-count">— 4 projects</span>
       </div>
 
       <div class="filters">
@@ -690,6 +697,7 @@ footer { max-width:1160px; border-color:#273044; margin-top:0; padding:1.7rem cl
         <button class="filter-btn" data-filter="quant">Quant</button>
         <button class="filter-btn" data-filter="ai-ml">AI/ML</button>
         <button class="filter-btn" data-filter="other">Other</button>
+        <button class="filter-btn" data-filter="product">Product Management</button>
       </div>
 
       <!-- The SVG project covers are illustrations, not screenshots. Replace each .project-visual with a real project image when available.
@@ -755,6 +763,26 @@ footer { max-width:1160px; border-color:#273044; margin-top:0; padding:1.7rem cl
           <p class="project-desc">A mobile-first, original Floof-merging game featuring custom canvas rendering, sound effects, and persistent high scores.</p>
           <div class="project-tags">
             <span class="tag">JavaScript</span><span class="tag">Canvas</span><span class="tag">PWA</span>
+          </div>
+        </div>
+
+
+        <div class="project-card gymfix-card" data-tags="product"
+          data-title="GymFix — Equipment Maintenance Management"
+          data-category="Product Management"
+          data-desc="An independent end-to-end Product Management case study exploring gym equipment fault reporting and maintenance visibility. Conducted secondary research, developed personas and user journeys, prioritised an MVP using RICE, wrote a PRD, and built an interactive Lovable demo. The prototype passed 7 of 7 manual functional checks; usability evaluation was simulated, not participant-tested."
+          data-tags-list="Product Management,Problem Discovery,RICE,PRD,Lovable,MVP"
+          data-github="https://github.com/andrew-raynard/gymfix-product-management"
+          data-demo="https://gymfix-demo.lovable.app/">
+          <div class="project-visual gymfix-visual"><img src="assets/gymfix-staff.png" alt="GymFix staff maintenance dashboard screenshot" loading="lazy"></div>
+          <div class="project-card-top">
+            <span class="project-icon">Product Management / Case Study</span>
+            <span class="project-arrow">↗</span>
+          </div>
+          <h3 class="project-title">GymFix <span class="badge badge-pdf">MVP</span></h3>
+          <p class="project-desc">An 8-phase PM case study, from research and RICE prioritisation to a working equipment-maintenance demo. 7/7 manual functional checks passed.</p>
+          <div class="project-tags">
+            <span class="tag">Product Management</span><span class="tag">RICE</span><span class="tag">Lovable</span>
           </div>
         </div>
 
