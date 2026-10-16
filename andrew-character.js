@@ -78,13 +78,13 @@ function currentSequence(){
    ? info.sequence.filter(i=>Number.isInteger(i)&&i>=0&&i<info.frames)
    : Array.from({length:info.frames},(_,i)=>i);
  if(!seq.length)return [0];
- if(state==='idle'&&seq.length>1)return [...seq,...seq.slice(0,-1).reverse()];
+ if(state==='idle'||state==='walking')return [seq[0]];
  return seq;
 }
 function tickFrames(dt,now){
  if(reduced.matches){frame=0;return;}
  const info=entry(state);const seq=currentSequence();
- const duration=info.duration||180;
+ const duration=info.duration||320;
  elapsed+=dt;
  while(elapsed>=duration){
   elapsed-=duration;
@@ -128,8 +128,8 @@ function tickMotion(dt,now){
  }
  if(state==='idle'&&!panel.hidden)return;
  if(state==='idle'&&now-lastInput>=sleepDelay){setState('sleeping');return;}
- if(state==='idle'&&now>=nextLook){nextLook=now+8000+Math.random()*7000;setState('lookAround');return;}
- if(state==='idle'&&now>=nextWave){nextWave=now+10000;setState('hovering');freezeUntil=now+600;return;}
+ if(false && state==='idle'&&now>=nextLook){nextLook=now+8000+Math.random()*7000;setState('lookAround');return;}
+ if(false && state==='idle'&&now>=nextWave){nextWave=now+10000;setState('hovering');freezeUntil=now+600;return;}
  if(state==='idle'&&now>=walkUntil){walkUntil=now+6000+Math.random()*6000;walkTo(10+Math.random()*(innerWidth-PIXELS-20));}
  if(state==='hovering'&&!hovering&&freezeUntil&&now>freezeUntil)setState('idle',{force:true});
 }
@@ -178,8 +178,8 @@ function release(e){
 }
 trigger.addEventListener('pointerup',release);
 trigger.addEventListener('pointercancel',e=>{if(e.pointerId===pointerId){pointerId=null;startPointer=null;dragMoved=false;dragging=false;velocityY=0;setState('falling',{force:true});}});
-trigger.addEventListener('pointerenter',()=>{hovering=true;if(ambient.has(state)&&state!=='sleeping')setState('hovering',{force:true});});
-trigger.addEventListener('pointerleave',()=>{hovering=false;if(state==='hovering')setState('idle',{force:true});});
+trigger.addEventListener('pointerenter',()=>{hovering=true;});
+trigger.addEventListener('pointerleave',()=>{hovering=false;});
 // Keyboard accessibility: native button Enter/Space fires click without pointerup.
 trigger.addEventListener('click',e=>{if(e.detail!==0)return;if(panel.hidden){setState('clicked',{force:true});if(reduced.matches){openPanel(true);setState('listening',{force:true});}}else openPanel(false);});
 function openPanel(open){panel.hidden=!open;trigger.setAttribute('aria-expanded',String(open));if(open){input.focus();if(state!=='thinking'&&state!=='talking')setState('listening',{force:true});}else {trigger.focus();if(!busy)setState('idle',{force:true});}}
