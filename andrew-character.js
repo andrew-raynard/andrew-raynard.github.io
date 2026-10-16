@@ -72,7 +72,7 @@ function setState(next,opts={}){
 const oneShots=new Set(['clicked','projectOpened','cheer','lookAround','landed']);
 function currentSequence(){
  const n=entry(state).frames;
- if(state==='idle')return [1];
+ if(state==='idle')return [1]; // Stable full-body pose; skip broken pointing frames
  if(state==='sleeping'&&n>2)return Array.from({length:n-2},(_,i)=>i+2);
  return Array.from({length:n},(_,i)=>i);
 }
@@ -130,10 +130,10 @@ function tickMotion(dt,now){
 }
 function paint(){
  const visual=reduced.matches?'idle':state;
- const idx=reduced.matches?0:activeFrame();
+ const idx=reduced.matches?1:activeFrame();
  draw(mainCtx,visual,idx);
  const panelState=panel.hidden?'idle':(busy?state:'listening');
- draw(chatCtx,panelState,panelState===state?idx:0);
+ draw(chatCtx,panelState,panelState===state?idx:(panelState==='idle'?1:0));
  stage.style.left=Math.round(x)+'px';stage.style.bottom=Math.round(y)+'px';
  mainCanvas.style.transform=`scaleX(${walkDirection})`;
  if(new URLSearchParams(location.search).has('debug')){
