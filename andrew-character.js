@@ -72,7 +72,7 @@ function setState(next,opts={}){
 const oneShots=new Set(['clicked','projectOpened','cheer','lookAround','landed']);
 function currentSequence(){
  const n=entry(state).frames;
- if(state==='idle'&&n>=3)return [0,1,2,1,0];
+ if(state==='idle')return [1];
  if(state==='sleeping'&&n>2)return Array.from({length:n-2},(_,i)=>i+2);
  return Array.from({length:n},(_,i)=>i);
 }
