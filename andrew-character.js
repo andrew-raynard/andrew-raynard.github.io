@@ -34,7 +34,7 @@ function draw(ctx,state,index){
  const {frameWidth:w,frameHeight:h}=item;
  ctx.clearRect(0,0,PIXELS,PIXELS);
  // Normalize older large source frames into the same 64px viewport.
- const factor=Math.min(56/w,58/h);
+ const factor=Math.min(60/w,58/322);
  const dw=Math.round(w*factor),dh=Math.round(h*factor);
  const dx=Math.round((SIZE-dw)/2),dy=SIZE-2-dh;
  ctx.drawImage(item.img,frame*w,0,w,h,dx*SCALE,dy*SCALE,dw*SCALE,dh*SCALE);
@@ -71,10 +71,15 @@ function setState(next,opts={}){
 }
 const oneShots=new Set(['clicked','projectOpened','cheer','lookAround','landed']);
 function currentSequence(){
- const n=entry(state).frames;
- if(state==='idle'&&n>=3)return [0,1,2,1,0];
- if(state==='sleeping'&&n>2)return Array.from({length:n-2},(_,i)=>i+2);
- return Array.from({length:n},(_,i)=>i);
+ const info=entry(state);
+ // The source artwork contains several partially cut-off poses.
+ // Use only verified, complete frames as configured in sprites.json.
+ const seq=Array.isArray(info.sequence)&&info.sequence.length
+   ? info.sequence.filter(i=>Number.isInteger(i)&&i>=0&&i<info.frames)
+   : Array.from({length:info.frames},(_,i)=>i);
+ if(!seq.length)return [0];
+ if(state==='idle'&&seq.length>1)return [...seq,...seq.slice(0,-1).reverse()];
+ return seq;
 }
 function tickFrames(dt,now){
  if(reduced.matches){frame=0;return;}
